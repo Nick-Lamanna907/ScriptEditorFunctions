@@ -21,59 +21,46 @@ function updateColours() {
     if (pageElements.length == 1) {                                       // If you chose one element...
       var shape = pageElements[0].asShape()                               //    Turn it into a shape
       var textRange = shape.getText();
-      textRange.getTextStyle().setForegroundColor('#000000')
+      textRange.getTextStyle().setForegroundColor('#000000')              //    Set all of the text in the shape to black
+      var stringToSearch = textRange.asString()                           //    Get string inside shape
+      var listOfWords = regexExtractWords(stringToSearch, regex)          //    Search for particular strings inside shape
+      var textToChange = text.concat(listOfWords)                         //    Create mega list of all strings to replace
 
-      for (let i = 0; i < text.length; i++) {                             //    For each item in the list...
-        var keyword = textRange.find(text[i]);                            //        Find the words
-        Logger.log("List for " + text[i] + " is " + keyword)
-
+      for (let i = 0; i < textToChange.length; i++) {                     //    For each item in the list...
+        var keyword = textRange.find(textToChange[i]);                    //        Find the words
         for (let j = 0; j < keyword.length; j++) {                        //        For each word...
-          colour(text[i],keyword[j])
-          //keyword[j].getTextStyle().setForegroundColor('#113761')         //          Set the colour
+          colour(text[i],keyword[j])                                      //            Replace word
         }
       }
-
-      var stringToSearch = textRange.asString()                           //    Get list of strings between brackets
-      var listOfWords = regexExtractWords(stringToSearch, regex)
-      for (let i = 0; i < listOfWords.length; i++) {                             //    For each item in the list...
-        var keyword = textRange.find(listOfWords[i]);                            //        Find the words
-        Logger.log("List for " + listOfWords[i] + " is " + keyword)
-
-        for (let j = 0; j < keyword.length; j++) {                        //        For each word...
-          keyword[j].getTextStyle().setForegroundColor('#980000')         //          Set the colour
-        }
-      }
-      Logger.log("List of words: " + listOfWords)
-
     } else {                                                              // If you chose too many elements
       Logger.log("Choose 1 textbox/shape.");
     }
   } else {                                                                // If you didnt choose a textbox or shape
     Logger.log("Choose a textbox/shape.");
   }
-    
-  SlidesApp.getUi()
-  //.alert('You clicked the UpdateColours item!');
+  SlidesApp.getUi()                                                       // Update menu items with this function
 }
 
 function regexExtractWords(text, regex) {
+/* Inputs:
+      - text: a string
+      - regex: the regular expression to match
+
+   Outputs:
+      - found: list of strings that match the regex */
+
   const found = text.match(regex);
   return found
 }
 
-function extractWords(str) {
-    const words = [];
-    for (let i = 0; i < str.length; i++) {
-        if (str.charAt(i) === '"') {
-            const stopIndex = str.indexOf('"', i);
-            if (stopIndex !== -1)
-                words.push(str.substring(i + 1, stopIndex));
-        }
-    }
-    return words;
-}
-
 function colour(searchWord, replaceWord) {
+/* Inputs:
+      - searchWord: the word you are searching for
+      - replaceWord: the word you want to replace
+
+   Outputs:
+      - n/a */
+
   switch (searchWord) {
     case 'print':
       replaceWord.getTextStyle().setForegroundColor('#9900ff')
