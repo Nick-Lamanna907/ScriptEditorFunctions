@@ -1,0 +1,97 @@
+const PRESENTATION_ID = '1qLn8K7VHbxVx0oF46ETOGFUInneVMPPftmZ7GArQf_rbT5CBxcnCRIcF'
+
+function onOpen() {
+  var ui = SlidesApp.getUi();
+  ui.createMenu('My Functions')
+      .addSubMenu(ui.createMenu('Code Slides')
+          .addItem('Update Colours', 'updateColours'))
+      .addToUi();
+}
+
+function updateColours() {
+  var selection = SlidesApp.getActivePresentation().getSelection();
+  var selectionType = selection.getSelectionType();
+  const regex = /"[a-zA-Z0-9 :!''’.?=$\[\]\(\)]+"/g
+  const text = ['print', 'if', 'elif', 'else', 'input']
+
+  if (selectionType == "PAGE_ELEMENT") {
+    var currentPage = selection.getCurrentPage();
+    var pageElements = selection.getPageElementRange().getPageElements(); // Gets all elements on a page
+
+    if (pageElements.length == 1) {                                       // If you chose one element...
+      var shape = pageElements[0].asShape()                               //    Turn it into a shape
+      var textRange = shape.getText();
+      textRange.getTextStyle().setForegroundColor('#000000')
+
+      for (let i = 0; i < text.length; i++) {                             //    For each item in the list...
+        var keyword = textRange.find(text[i]);                            //        Find the words
+        Logger.log("List for " + text[i] + " is " + keyword)
+
+        for (let j = 0; j < keyword.length; j++) {                        //        For each word...
+          colour(text[i],keyword[j])
+          //keyword[j].getTextStyle().setForegroundColor('#113761')         //          Set the colour
+        }
+      }
+
+      var stringToSearch = textRange.asString()                           //    Get list of strings between brackets
+      var listOfWords = regexExtractWords(stringToSearch, regex)
+      for (let i = 0; i < listOfWords.length; i++) {                             //    For each item in the list...
+        var keyword = textRange.find(listOfWords[i]);                            //        Find the words
+        Logger.log("List for " + listOfWords[i] + " is " + keyword)
+
+        for (let j = 0; j < keyword.length; j++) {                        //        For each word...
+          keyword[j].getTextStyle().setForegroundColor('#980000')         //          Set the colour
+        }
+      }
+      Logger.log("List of words: " + listOfWords)
+
+    } else {                                                              // If you chose too many elements
+      Logger.log("Choose 1 textbox/shape.");
+    }
+  } else {                                                                // If you didnt choose a textbox or shape
+    Logger.log("Choose a textbox/shape.");
+  }
+    
+  SlidesApp.getUi()
+  //.alert('You clicked the UpdateColours item!');
+}
+
+function regexExtractWords(text, regex) {
+  const found = text.match(regex);
+  return found
+}
+
+function extractWords(str) {
+    const words = [];
+    for (let i = 0; i < str.length; i++) {
+        if (str.charAt(i) === '"') {
+            const stopIndex = str.indexOf('"', i);
+            if (stopIndex !== -1)
+                words.push(str.substring(i + 1, stopIndex));
+        }
+    }
+    return words;
+}
+
+function colour(searchWord, replaceWord) {
+  switch (searchWord) {
+    case 'print':
+      replaceWord.getTextStyle().setForegroundColor('#9900ff')
+      break;
+    case 'if':
+      replaceWord.getTextStyle().setForegroundColor('#0000ff')
+      break;
+    case 'elif':
+      replaceWord.getTextStyle().setForegroundColor('#0000ff')
+      break;
+    case 'else':
+      replaceWord.getTextStyle().setForegroundColor('#0000ff')
+      break;
+    case 'input':
+      replaceWord.getTextStyle().setForegroundColor('#9900ff')
+      break;
+    default:
+      replaceWord.getTextStyle().setForegroundColor('#980000')
+      break;
+  }
+}
