@@ -20,25 +20,25 @@ function updateCodeTextColours() {
 
   var selection = SlidesApp.getActivePresentation().getSelection();
   var selectionType = selection.getSelectionType();
-  const regex = /"[a-zA-Z0-9 :!''’.?=$\[\]\(\)]+"/g
-  const text = ['print', 'if', 'elif', 'else', 'input']
+  const regex = /"[a-zA-Z0-9 :!''’.?=$\[\]\(\)]+"/g;
+  const text = ['print', 'if', 'elif', 'else', 'input'];
 
   if (selectionType == "PAGE_ELEMENT") {
     var currentPage = selection.getCurrentPage();
     var pageElements = selection.getPageElementRange().getPageElements(); // Gets all elements on a page
 
     if (pageElements.length == 1) {                                       // If you chose one element...
-      var shape = pageElements[0].asShape()                               //    Turn it into a shape
+      var shape = pageElements[0].asShape();                              //    Turn it into a shape
       var textRange = shape.getText();
-      textRange.getTextStyle().setForegroundColor('#000000')              //    Set all of the text in the shape to black
-      var stringToSearch = textRange.asString()                           //    Get string inside shape
-      var listOfWords = regexExtractWords(stringToSearch, regex)          //    Search for particular strings inside shape
-      var textToChange = text.concat(listOfWords)                         //    Create mega list of all strings to replace
+      textRange.getTextStyle().setForegroundColor('#000000');             //    Set all of the text in the shape to black
+      var stringToSearch = textRange.asString();                          //    Get string inside shape
+      var listOfWords = regexExtractWords(stringToSearch, regex);         //    Search for particular strings inside shape
+      var textToChange = text.concat(listOfWords);                        //    Create mega list of all strings to replace
 
       for (let i = 0; i < textToChange.length; i++) {                     //    For each item in the list...
         var keyword = textRange.find(textToChange[i]);                    //        Find the words
         for (let j = 0; j < keyword.length; j++) {                        //        For each word...
-          colour(text[i],keyword[j])                                      //            Replace word
+          colour(text[i],keyword[j]);                                     //            Replace word
         }
       }
     } else {                                                              // If you chose too many elements
@@ -47,7 +47,7 @@ function updateCodeTextColours() {
   } else {                                                                // If you didnt choose a textbox or shape
     Logger.log("Choose a textbox/shape.");
   }
-  SlidesApp.getUi()                                                       // Update menu items with this function
+  SlidesApp.getUi();                                                      // Update menu items with this function
 }
 
 function regexExtractWords(text, regex) {
@@ -76,22 +76,22 @@ function colour(searchWord, replaceWord) {
 
   switch (searchWord) {
     case 'print':
-      replaceWord.getTextStyle().setForegroundColor('#9900ff')
+      replaceWord.getTextStyle().setForegroundColor('#9900ff');
       break;
     case 'if':
-      replaceWord.getTextStyle().setForegroundColor('#0000ff')
+      replaceWord.getTextStyle().setForegroundColor('#0000ff');
       break;
     case 'elif':
-      replaceWord.getTextStyle().setForegroundColor('#0000ff')
+      replaceWord.getTextStyle().setForegroundColor('#0000ff');
       break;
     case 'else':
-      replaceWord.getTextStyle().setForegroundColor('#0000ff')
+      replaceWord.getTextStyle().setForegroundColor('#0000ff');
       break;
     case 'input':
-      replaceWord.getTextStyle().setForegroundColor('#9900ff')
+      replaceWord.getTextStyle().setForegroundColor('#9900ff');
       break;
     default:
-      replaceWord.getTextStyle().setForegroundColor('#980000')
+      replaceWord.getTextStyle().setForegroundColor('#980000');
       break;
   }
 }
