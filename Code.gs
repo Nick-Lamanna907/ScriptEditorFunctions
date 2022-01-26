@@ -37,7 +37,7 @@ function formatCodeColourAllSlides() {
         Logger.log("slide: " + i + ", element: " + j + ", " + textFont);
         if (textFont == fontSearch) {
           slideElements[j].select();
-          updateCodeTextColours(theme);
+          formatCodeColour(theme);
         }
       }
     }
