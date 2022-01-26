@@ -4,14 +4,14 @@ function onOpen() {
   var ui = SlidesApp.getUi();
   ui.createMenu('My Functions')
       .addSubMenu(ui.createMenu('Code Slides')
-          .addItem('Update Code All Slides', 'codeColourAllSlides')
-          .addItem('Update Code Selected Item', 'updateCodeTextColours'))
+          .addItem('Format Code All Slides', 'formatCodeColourAllSlides')
+          .addItem('Update Code Selected Item', 'formatCodeColour'))
       .addToUi();
 }
 
 ////////// UPDATE CODE TEXT COLOURS //////////
-/* Contains: codeColourAllSlides(), updateCodeTextColours(), regexExtractWords(text, regex), colour(searchWord, replaceWord) */
-function codeColourAllSlides() {
+/* Contains: formatCodeColourAllSlides(), formatCodeColour(), regexExtractWords(text, regex), colour(searchWord, replaceWord) */
+function formatCodeColourAllSlides() {
   /* Runs through entire presentation and changes colour of text withing shapes that contain 'Roboto Mono' text 
 
   Inputs:
@@ -44,7 +44,7 @@ function codeColourAllSlides() {
   }
 }
 
-function updateCodeTextColours(theme = 0) {
+function formatCodeColour(theme = 0) {
   /* Choose a page element that contains code, and this function will update all the colours,
   according to the CSinSC style guide.
 
