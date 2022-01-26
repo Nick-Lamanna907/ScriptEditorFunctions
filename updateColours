@@ -4,11 +4,14 @@ function onOpen() {
   var ui = SlidesApp.getUi();
   ui.createMenu('My Functions')
       .addSubMenu(ui.createMenu('Code Slides')
-          .addItem('Update Code Colours', 'readThroughAllSlides'))
+          .addItem('Update Code All Slides', 'codeColourAllSlides')
+          .addItem('Update Code Selected Item', 'updateCodeTextColours'))
       .addToUi();
 }
 
-function readThroughAllSlides() {
+////////// UPDATE CODE TEXT COLOURS //////////
+/* Contains: codeColourAllSlides(), updateCodeTextColours(), regexExtractWords(text, regex), colour(searchWord, replaceWord) */
+function codeColourAllSlides() {
   /* Runs through entire presentation and changes colour of text withing shapes that contain 'Roboto Mono' text 
 
   Inputs:
@@ -17,10 +20,12 @@ function readThroughAllSlides() {
   Outputs:
       - n/a */
 
+  var ui = SlidesApp.getUi(); // Same variations.
   var presentation = SlidesApp.getActivePresentation();
   var slides = presentation.getSlides();
-  const fontSearch = "Roboto Mono"
+  var theme = showPrompt();
 
+  const fontSearch = "Roboto Mono";
   for (let i = 0; i < slides.length; i++) {
     var slideElements = slides[i].getPageElements()
     
@@ -32,22 +37,21 @@ function readThroughAllSlides() {
         Logger.log("slide: " + i + ", element: " + j + ", " + textFont);
         if (textFont == fontSearch) {
           slideElements[j].select();
-          updateCodeTextColours();
+          updateCodeTextColours(theme);
         }
       }
     }
   }
 }
 
-////////// UPDATE CODE TEXT COLOURS //////////
-/* Contains: updateCodeTextColours(), regexExtractWords(text, regex), colour(searchWord, replaceWord) */
-
-function updateCodeTextColours() {
+function updateCodeTextColours(theme = 0) {
   /* Choose a page element that contains code, and this function will update all the colours,
   according to the CSinSC style guide.
 
   Inputs:
-      - n/a
+      - theme: the colour theme the user wants to use
+          - if function called with no theme parameter, the fucntion will prompt user to choose one
+          - can be called with or without theme parameter
 
   Outputs:
       - n/a */
@@ -56,6 +60,10 @@ function updateCodeTextColours() {
   var selectionType = selection.getSelectionType();
   const regex = /"[a-zA-Z0-9 :!''’.?=$\[\]\(\)]+"/g;
   const text = ['print', 'if', 'elif', 'else', 'input'];
+
+  if (theme == 0) {
+    var theme = showPrompt();
+  }
 
   if (selectionType == "PAGE_ELEMENT") {
     var currentPage = selection.getCurrentPage();
@@ -72,7 +80,7 @@ function updateCodeTextColours() {
       for (let i = 0; i < textToChange.length; i++) {                     //    For each item in the list...
         var keyword = textRange.find(textToChange[i]);                    //        Find the words
         for (let j = 0; j < keyword.length; j++) {                        //        For each word...
-          colour(text[i],keyword[j]);                                     //            Replace word
+          colour(text[i],keyword[j],theme);                                     //            Replace word
         }
       }
     } else {                                                              // If you chose too many elements
@@ -98,34 +106,92 @@ function regexExtractWords(text, regex) {
   return found
 }
 
-function colour(searchWord, replaceWord) {
+function colour(searchWord, replaceWord, theme) {
 /* Changes the replaceWord to the colour attached to the searchWord
 
   Inputs:
       - searchWord: the word you are searching for
       - replaceWord: the word you want to replace
+      - theme: 'dark' or 'light' coding theme
 
   Outputs:
       - n/a */
-
-  switch (searchWord) {
-    case 'print':
-      replaceWord.getTextStyle().setForegroundColor('#9900ff');
-      break;
-    case 'if':
-      replaceWord.getTextStyle().setForegroundColor('#0000ff');
-      break;
-    case 'elif':
-      replaceWord.getTextStyle().setForegroundColor('#0000ff');
-      break;
-    case 'else':
-      replaceWord.getTextStyle().setForegroundColor('#0000ff');
-      break;
-    case 'input':
-      replaceWord.getTextStyle().setForegroundColor('#9900ff');
-      break;
-    default:
-      replaceWord.getTextStyle().setForegroundColor('#980000');
-      break;
+  
+  if (theme == 'light') {
+    switch (searchWord) {
+      case 'print':
+        replaceWord.getTextStyle().setForegroundColor('#9900ff');
+        break;
+      case 'if':
+        replaceWord.getTextStyle().setForegroundColor('#0000ff');
+        break;
+      case 'elif':
+        replaceWord.getTextStyle().setForegroundColor('#0000ff');
+        break;
+      case 'else':
+        replaceWord.getTextStyle().setForegroundColor('#0000ff');
+        break;
+      case 'input':
+        replaceWord.getTextStyle().setForegroundColor('#9900ff');
+        break;
+      default:
+        replaceWord.getTextStyle().setForegroundColor('#980000');
+        break;
+    } 
+  } else if (theme == 'dark') {
+    switch (searchWord) {
+      case 'print':
+        replaceWord.getTextStyle().setForegroundColor('#990000');
+        break;
+      case 'if':
+        replaceWord.getTextStyle().setForegroundColor('#ff00ff');
+        break;
+      case 'elif':
+        replaceWord.getTextStyle().setForegroundColor('#0340ff');
+        break;
+      case 'else':
+        replaceWord.getTextStyle().setForegroundColor('#1750ff');
+        break;
+      case 'input':
+        replaceWord.getTextStyle().setForegroundColor('#9a30ff');
+        break;
+      default:
+        replaceWord.getTextStyle().setForegroundColor('#98f000');
+        break;
+    }
   }
+}
+
+////////// ARCHIVED //////////
+/* Contains: showPrompt() */
+function showPrompt() {
+  /* Asks user what theme they want to change the code to
+
+  Inputs:
+      - n/a
+
+  Outputs:
+      - string stating what theme the user wants */
+
+  var ui = SlidesApp.getUi(); // Same variations.
+
+  var result = ui.prompt(
+      'What would you like to edit?',
+      'light, dark',
+      ui.ButtonSet.OK_CANCEL);
+
+  // Process the user's response.
+  var button = result.getSelectedButton();
+  var text = result.getResponseText();
+  /*if (button == ui.Button.OK) {
+    // User clicked "OK".
+    ui.alert('You will edit ' + text + '.');
+  } else if (button == ui.Button.CANCEL) {
+    // User clicked "Cancel".
+    ui.alert('You cancelled.');
+  } else if (button == ui.Button.CLOSE) {
+    // User clicked X in the title bar.
+    ui.alert('You closed the dialog.');
+  }*/
+  return text;
 }
