@@ -8,6 +8,9 @@ function onOpen() {
       .addToUi();
 }
 
+////////// UPDATE CODE TEXT COLOURS //////////
+/* Contains: updateCodeTextColours(), regexExtractWords(text, regex), colour(searchWord, replaceWord) */
+
 function updateCodeTextColours() {
   /* Choose a page element that contains code, and this function will update all the colours,
   according to the CSinSC style guide.
