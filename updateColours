@@ -4,8 +4,39 @@ function onOpen() {
   var ui = SlidesApp.getUi();
   ui.createMenu('My Functions')
       .addSubMenu(ui.createMenu('Code Slides')
-          .addItem('Update Colours', 'updateCodeTextColours'))
+          .addItem('Update Code Colours', 'readThroughAllSlides'))
       .addToUi();
+}
+
+function readThroughAllSlides() {
+  /* Runs through entire presentation and changes colour of text withing shapes that contain 'Roboto Mono' text 
+
+  Inputs:
+      - n/a
+
+  Outputs:
+      - n/a */
+
+  var presentation = SlidesApp.getActivePresentation();
+  var slides = presentation.getSlides();
+  const fontSearch = "Roboto Mono"
+
+  for (let i = 0; i < slides.length; i++) {
+    var slideElements = slides[i].getPageElements()
+    
+    for (let j = 0; j < slideElements.length; j++) {
+      if (slideElements[j].getPageElementType() == "SHAPE") {
+        var shapeText = slideElements[j].asShape().getText();
+        var textFont = shapeText.getTextStyle().getFontFamily();
+
+        Logger.log("slide: " + i + ", element: " + j + ", " + textFont);
+        if (textFont == fontSearch) {
+          slideElements[j].select();
+          updateCodeTextColours();
+        }
+      }
+    }
+  }
 }
 
 ////////// UPDATE CODE TEXT COLOURS //////////
