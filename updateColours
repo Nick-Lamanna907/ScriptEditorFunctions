@@ -4,11 +4,20 @@ function onOpen() {
   var ui = SlidesApp.getUi();
   ui.createMenu('My Functions')
       .addSubMenu(ui.createMenu('Code Slides')
-          .addItem('Update Colours', 'updateColours'))
+          .addItem('Update Colours', 'updateCodeTextColours'))
       .addToUi();
 }
 
-function updateColours() {
+function updateCodeTextColours() {
+  /* Choose a page element that contains code, and this function will update all the colours,
+  according to the CSinSC style guide.
+
+  Inputs:
+      - n/a
+
+  Outputs:
+      - n/a */
+
   var selection = SlidesApp.getActivePresentation().getSelection();
   var selectionType = selection.getSelectionType();
   const regex = /"[a-zA-Z0-9 :!''’.?=$\[\]\(\)]+"/g
@@ -42,11 +51,13 @@ function updateColours() {
 }
 
 function regexExtractWords(text, regex) {
-/* Inputs:
+/* Provides a list of substrings that all match the regex passed in 
+
+  Inputs:
       - text: a string
       - regex: the regular expression to match
 
-   Outputs:
+  Outputs:
       - found: list of strings that match the regex */
 
   const found = text.match(regex);
@@ -54,11 +65,13 @@ function regexExtractWords(text, regex) {
 }
 
 function colour(searchWord, replaceWord) {
-/* Inputs:
+/* Changes the replaceWord to the colour attached to the searchWord
+
+  Inputs:
       - searchWord: the word you are searching for
       - replaceWord: the word you want to replace
 
-   Outputs:
+  Outputs:
       - n/a */
 
   switch (searchWord) {
