@@ -3,13 +3,91 @@ const PRESENTATION_ID = '1qLn8K7VHbxVx0oF46ETOGFUInneVMPPftmZ7GArQf_rbT5CBxcnCRI
 function onOpen() {
   var ui = SlidesApp.getUi();
   ui.createMenu('My Functions')
-      .addSubMenu(ui.createMenu('Code Slides')
+      .addSubMenu(ui.createMenu('Code Text')
           .addItem('Format Code [All Slides]', 'formatCodeColourAllSlides')
           .addItem('Format Code [Selected Item]', 'formatCodeColour'))
+      .addSubMenu(ui.createMenu('Normal Text')
+          .addItem('Format Key Words', 'formatKeyWord'))
       .addToUi();
 }
 
-////////// UPDATE CODE TEXT COLOURS //////////
+////////// FORMAT KEY WORD //////////
+/* Contains: */
+function formatKeyWord() {
+/* Asks user what word they want to format
+
+  Inputs:
+      - n/a
+
+  Outputs:
+      - string stating what word the user wants to format*/
+  
+  var ui = SlidesApp.getUi();
+  var keyword = askWord();
+  var colour = askColour();
+  var fontSearch = "Roboto";
+
+  var selection = SlidesApp.getActivePresentation().getSelection();
+  var selectionType = selection.getSelectionType();
+
+  if (selectionType == "PAGE") {
+    var slide = selection.getCurrentPage().asSlide();
+    var slideElements = slide.getPageElements();
+
+    for (let i = 0; i < slideElements.length; i++) {
+      if (slideElements[i].getPageElementType() == "SHAPE") {
+        var shapeText = slideElements[i].asShape().getText();
+        var textFont = shapeText.getTextStyle().getFontFamily();
+
+        if (textFont == fontSearch) {
+          slideElements[i].select();
+          var formatTextRange = shapeText.find(keyword);
+          Logger.log(formatTextRange);
+          formatTextRange[0].getTextStyle().setBold(true).setForegroundColor(colour);
+        }
+      }
+    }
+  } else {
+    ui.alert("Select a slide.")
+  }
+}
+
+function askWord() {
+/* Asks user what word they want to format
+
+  Inputs:
+      - n/a
+
+  Outputs:
+      - string stating what word the user wants to format*/
+
+  var ui = SlidesApp.getUi(); // Same variations.
+  var result = ui.prompt(
+      'What word would you like to edit?',
+      ui.ButtonSet.OK_CANCEL);
+  var text = result.getResponseText();
+  return text;
+}
+
+function askColour() {
+/* Asks user what colour they want to format a word to
+
+  Inputs:
+      - n/a
+
+  Outputs:
+      - string stating what colour the user wants to format a word to*/
+
+  var ui = SlidesApp.getUi(); // Same variations.
+  var result = ui.prompt(
+      'What colour do you want to use?',
+      '(input HEX value with hashtag)',
+      ui.ButtonSet.OK_CANCEL);
+  var text = result.getResponseText();
+  return text;
+}
+
+////////// FORMAT CODE TEXT COLOURS //////////
 /* Contains: formatCodeColourAllSlides(), formatCodeColour(), regexExtractWords(text, regex), colour(searchWord, replaceWord)
              showPrompt(), searchForExtras() */
 function formatCodeColourAllSlides() {
@@ -76,12 +154,11 @@ function formatCodeColour(theme = 0) {
     if (pageElements.length == 1) {                                       // If you chose one element...
       var shape = pageElements[0].asShape();                              //    Turn it into a shape
       var textRange = shape.getText();                                    //    Get text
-      
+      var stringToSearch = textRange.asString();                          //    Get string inside shape
+
       if (theme == 'light') {textRange.getTextStyle().setForegroundColor('#000000');} //Set all of the text in the shape to black
       if (theme == 'dark')  {textRange.getTextStyle().setForegroundColor('#ffffff');} //Set all of the text in the shape to white
       
-      var stringToSearch = textRange.asString();                          //    Get string inside shape
-
       searchForExtras('number', textRange, stringToSearch, regexNum, theme);//  Replace all numbers first (later str's are handled)
 
       var listOfWords = regexExtractWords(stringToSearch, regex);         //    Search for particular strings inside shape
@@ -93,14 +170,14 @@ function formatCodeColour(theme = 0) {
         }
       }
 
-      searchForExtras('attribute', textRange, stringToSearch, regexLabel, theme);//Change colour of anything following a '#'
-      searchForExtras('comment', textRange, stringToSearch, regexComment, theme);//Change colour of anything following a '.'
+      searchForExtras('attribute', textRange, stringToSearch, regexLabel, theme);//Change colour of anything following a '.'
+      searchForExtras('comment', textRange, stringToSearch, regexComment, theme);//Change colour of anything following a '#'
 
     } else {                                                              // If you chose too many elements
-      Logger.log("Choose 1 textbox/shape.");
+      ui.alert("Choose 1 textbox/shape.");
     }
   } else {                                                                // If you didnt choose a textbox or shape
-    Logger.log("Choose a textbox/shape.");
+    ui.alert("Choose a textbox/shape.");
   }
   SlidesApp.getUi();                                                      // Update menu items with this function
 }
