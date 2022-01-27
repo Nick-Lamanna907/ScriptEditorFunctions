@@ -62,7 +62,7 @@ function formatCodeColour(theme = 0) {
   const regex = /"[a-zA-Z0-9 :!''’.?=$\[\]\(\)]+"/g;
   const regexNum = /[0-9]/g;
   const regexComment = /#[a-zA-Z0-9 :!''’.?=$\[\]\(\)]+/g;
-  const regexLabel = /\.[a-zA-Z0-9 :!''’.?=$\[\]\(\)_]+/g;
+  const regexLabel = /(?<=\.)[a-zA-Z0-9 :!''’.?=$\[\]\(\)_]+/g;
   const text = [ 'int', 'str', 'print', 'input', 'if', 'elif', 'else', 'from', 'import'];
 
   if (theme == 0) {
@@ -82,7 +82,7 @@ function formatCodeColour(theme = 0) {
       
       var stringToSearch = textRange.asString();                          //    Get string inside shape
 
-      searchForExtras(textRange, stringToSearch, regexNum, theme)         //    Replace all numbers first (later str's are handled)
+      searchForExtras('number', textRange, stringToSearch, regexNum, theme);//  Replace all numbers first (later str's are handled)
 
       var listOfWords = regexExtractWords(stringToSearch, regex);         //    Search for particular strings inside shape
       var textToChange = text.concat(listOfWords);                        //    Create mega list of all strings to replace
@@ -93,8 +93,8 @@ function formatCodeColour(theme = 0) {
         }
       }
 
-      searchForExtras(textRange, stringToSearch, regexLabel, theme);      //    Change colour of anything following a '#'
-      searchForExtras(textRange, stringToSearch, regexComment, theme);    //    Change colour of anything following a '.'
+      searchForExtras('attribute', textRange, stringToSearch, regexLabel, theme);//Change colour of anything following a '#'
+      searchForExtras('comment', textRange, stringToSearch, regexComment, theme);//Change colour of anything following a '.'
 
     } else {                                                              // If you chose too many elements
       Logger.log("Choose 1 textbox/shape.");
@@ -105,7 +105,7 @@ function formatCodeColour(theme = 0) {
   SlidesApp.getUi();                                                      // Update menu items with this function
 }
 
-function searchForExtras(textRange, stringToSearch, regex, theme){
+function searchForExtras(type, textRange, stringToSearch, regex, theme){
 /* Searches for and replaces anything matching the regex
 
   Inputs:
@@ -122,10 +122,10 @@ function searchForExtras(textRange, stringToSearch, regex, theme){
     for (let i = 0; i < listToReplace.length; i++) {
       var keyword = textRange.find(listToReplace[i]);                     //        Find the extras 
       for (let j = 0; j < keyword.length; j++) { 
-        colour('number', keyword[j], theme);     
+        colour(type, keyword[j], theme);     
       }
     }
-    Logger.log('Extras done: ' + listToReplace)
+    Logger.log('Extras done: ' + listToReplace);
   }    
 }  
 
@@ -158,6 +158,7 @@ function colour(searchWord, replaceWord, theme) {
     switch (searchWord) {
       case 'print':
       case 'input':
+      case 'attribute':
         replaceWord.getTextStyle().setForegroundColor('#9900ff');
         break;
       case 'if':
@@ -185,6 +186,7 @@ function colour(searchWord, replaceWord, theme) {
     switch (searchWord) {
       case 'print':
       case 'input':
+      case 'attribute':
         replaceWord.getTextStyle().setForegroundColor('#ffd966');
         break;
       case 'if':
