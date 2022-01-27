@@ -43,7 +43,9 @@ function formatKeyWord() {
           slideElements[i].select();
           var formatTextRange = shapeText.find(keyword);
           Logger.log(formatTextRange);
-          formatTextRange[0].getTextStyle().setBold(true).setForegroundColor(colour);
+          for (let j = 0; j < formatTextRange.length; j++) {
+            formatTextRange[j].getTextStyle().setBold(true).setForegroundColor(colour);
+          }
         }
       }
     }
